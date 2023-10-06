@@ -7,7 +7,6 @@ fn main(){
     //create a cpu tracker with default capacity
     let mut cpu_tracker = SystemTracker::new_cpu_tracker();
     for _ in 0..10 {
-        let x = &cpu_tracker.fetch_usage().unwrap()[0];
         println!("{:?}", cpu_tracker.fetch_usage());
         thread::sleep(Duration::from_millis(500));
     }

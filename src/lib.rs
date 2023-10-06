@@ -4,7 +4,7 @@ pub mod cpu;
 pub struct SystemTracker;
 
 impl SystemTracker{
-    /// Create a tracker that records each system's cpu usage over 1 minute.
+    /// Create a tracker that records each system's CPU-core usage over 1 minute.
     /// ```
     /// let mut cpu_tracker = SystemTracker::new_cpu_tracker();
     /// ```
@@ -12,7 +12,7 @@ impl SystemTracker{
         CpuTracker::default()
     }
 
-    /// Create a tracker that records each system's cpu usage over a specified time.
+    /// Create a tracker that records each system's CPU-core usage over a specified time.
     /// ```
     /// let mut cpu_tracker =
     ///     SystemTracker::new_cpu_tracker_with_capacity(TrackerCapacity::FIVE);
@@ -24,6 +24,6 @@ impl SystemTracker{
     }
 
     pub fn new_memory_tracker(){
-
+        
     }
 }

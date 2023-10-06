@@ -27,7 +27,6 @@ impl TrackerCapacity{
     }
 }
 
-
 /// Wraps a vector that contains the usage recorded by the CpuTracker
 /// over the lapse specified when `new_cpu_tracker()` or `new_cpu_tracker_with_capacity()`
 /// was called.
@@ -47,12 +46,13 @@ impl CoreBuffer{
 }
 
 /// A struct that represents a CPU usage tracker.
-/// When created, it starts recording the usage of each CPU-Core on the system.
+/// When created, it spawns a background thread that records the usage of each CPU-Core on the system.
+/// The information is updated twice per second.
 /// 
 /// To get the recorded data up to 'now', call `fetch_usage()`
 /// and to stop recording CPU usage, call `stop()`.
 /// 
-/// Once stoped, the `fetch_usage()` method will always return None 
+/// Once stoped, the `fetch_usage()` method will always return `None` 
 pub struct CpuTracker{
     buffer: Arc<Mutex<Vec<CoreBuffer>>>,
     stop_flag: Arc<AtomicBool>,
@@ -86,11 +86,21 @@ impl CpuTracker{
         refresh_loop(sys, tracker.capacity, tracker_buffer,stop_flag );
         tracker
     }
-
+    /// Stop the background thread that updates the buffer where
+    /// historical CPU usage information is saved.
+    /// 
+    /// Consider that calling this method will make later calls to `fetch_usage()`
+    /// always return `None`.
     pub fn stop(&mut self){
         self.stop_flag.store(true, std::sync::atomic::Ordering::Relaxed);
     }
-
+    /// Fetch the the historical CPU usage information recorded from 'capacity' ago
+    /// up until 'now'. Consider that if the `CpuTracker` was crated recently,
+    /// depending of the tracker capacity, the first positions of the buffer will be
+    /// filled with 0s for quite some time.
+    /// 
+    /// Also, consider that calling `stop()` will make later calls to this method
+    /// always return `None`.
     pub fn fetch_usage(&mut self) -> Option<Vec<CoreBuffer>>{
         if self.stop_flag.load(std::sync::atomic::Ordering::Relaxed) {
             return None;
