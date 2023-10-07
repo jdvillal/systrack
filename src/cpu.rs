@@ -2,32 +2,12 @@ use std::{sync::{Mutex, Arc, atomic::AtomicBool}, time::{Duration, Instant}, thr
 
 use sysinfo::{System, SystemExt, CpuExt};
 
+use crate::TrackerCapacity;
 
-/// Represents the amount of time (in minutes) that a tracker will record.
-///
-/// Internally this is used to calculate the size of the buffer
-/// where the resource information is beign saved.   
 
-#[derive(Clone, Copy)]
-pub enum TrackerCapacity{
-    ONE, //one minute
-    FIVE, //five minutes
-    TEN, //ten minutes
-    CUSTOM(u8)
-}
 
-impl TrackerCapacity{
-    fn to_buffer_size(self) -> usize{
-        match self{
-            TrackerCapacity::ONE => 120,
-            TrackerCapacity::FIVE => 120 * 5,
-            TrackerCapacity::TEN => 120 * 10,
-            TrackerCapacity::CUSTOM(m) => 120 * m as usize
-        }
-    }
-}
 
-/// Wraps a vector that contains the usage recorded by the CpuTracker
+/// Wraps a vector that contains the historial CPU-core usage recorded by the CpuTracker
 /// over the lapse specified when `new_cpu_tracker()` or `new_cpu_tracker_with_capacity()`
 /// was called.
 #[derive(Debug, Clone)]
@@ -83,7 +63,7 @@ impl CpuTracker{
         };
         let tracker_buffer = Arc::clone(&tracker.buffer);
         let stop_flag = Arc::clone(&tracker.stop_flag);
-        refresh_loop(sys, tracker.capacity, tracker_buffer,stop_flag );
+        refresh_loop(sys, tracker.capacity, tracker_buffer, stop_flag);
         tracker
     }
     /// Stop the background thread that updates the buffer where

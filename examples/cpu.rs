@@ -1,7 +1,6 @@
 use std::{time::Duration, thread};
 
-use systrack::SystemTracker;
-use systrack::cpu::TrackerCapacity;
+use systrack::{SystemTracker, TrackerCapacity};
 
 fn main(){
     //create a cpu tracker with default capacity
