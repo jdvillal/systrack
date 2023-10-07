@@ -1,6 +1,6 @@
 use std::{sync::{Mutex, Arc, atomic::AtomicBool}, time::{Duration, Instant}, thread, ops::{DerefMut, Deref}};
 
-use sysinfo::{System, SystemExt, CpuExt};
+use sysinfo::{System, SystemExt};
 
 use crate::TrackerCapacity;
 
@@ -45,9 +45,9 @@ impl MemTracker{
     //
     pub (crate) fn with_capacity(minutes: TrackerCapacity) -> MemTracker{
         let capacity: usize = minutes.to_buffer_size();
-        let mut sys = System::new_all();
+        let sys = System::new_all();
 
-        let mut buff: MemBuffer = MemBuffer::new(capacity);
+        let buff: MemBuffer = MemBuffer::new(capacity);
 
         let tracker = MemTracker{
             buffer: Arc::new(Mutex::new(buff)),
